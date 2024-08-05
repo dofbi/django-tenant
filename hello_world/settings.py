@@ -36,7 +36,9 @@ if 'CODESPACE_NAME' in os.environ:
 
 # Application definition
 
-INSTALLED_APPS = [
+SHARED_APPS = [
+    "tenant_schemas",
+    "tenant",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -44,9 +46,17 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django_browser_reload",
+    'graphene_django',
 ]
 
+TENANT_APPS = (
+    "website",
+)
+
+INSTALLED_APPS = list(SHARED_APPS) + [app for app in TENANT_APPS if app not in SHARED_APPS]
+
 MIDDLEWARE = [
+    "tenant.middleware.RequestIDTenantMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -72,6 +82,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                'django.template.context_processors.request',
             ],
         },
     },
@@ -85,8 +96,12 @@ WSGI_APPLICATION = "hello_world.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        'ENGINE': 'tenant_schemas.postgresql_backend',
+        'NAME': 'postgres',
+        'USER': 'postgres',
+        'PASSWORD': 'postgres',
+        'HOST': 'localhost',  # Utiliser 'db' si le conteneur Django est ajouté
+        'PORT': '5432',
     }
 }
 
@@ -140,3 +155,21 @@ MEDIA_ROOT = BASE_DIR / "hello_world" / "media"
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+CSRF_TRUSTED_ORIGINS = config('CSRF_TRUSTED_ORIGINS', default='').split(',')
+
+GRAPHENE = {
+    'SCHEMA': 'website.schema.schema',
+}
+
+DATABASE_ROUTERS = (
+    'tenant_schemas.routers.TenantSyncRouter',
+)
+
+TEMPLATE_CONTEXT_PROCESSORS = (
+    'django.core.context_processors.request',
+)
+
+TENANT_MODEL = "tenant.Client"
+
+DEFAULT_FILE_STORAGE = "tenant_schemas.storage.TenantFileSystemStorage"

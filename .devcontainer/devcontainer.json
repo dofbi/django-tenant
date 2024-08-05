@@ -4,7 +4,7 @@
     "cpus": 4
   },
   "waitFor": "onCreateCommand",
-  "updateContentCommand": "pip install -r requirements.txt && python manage.py migrate",
+  "updateContentCommand": "docker-compose up -d && pip install -r requirements.txt && python manage.py migrate_schemas --shared",
   "postCreateCommand": "cp .env.example .env",
   "postAttachCommand": {
     "server": "python manage.py runserver"
@@ -27,5 +27,10 @@
       "onAutoForward": "openPreview"
     }
   },
-  "forwardPorts": [8000]
+  "forwardPorts": [
+    8000
+  ],
+  "features": {
+    "ghcr.io/jckimble/devcontainer-features/ngrok:3": {}
+  }
 }
