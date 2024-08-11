@@ -1,12 +1,12 @@
 import graphene
 from graphene_django.types import DjangoObjectType
-from .models import Record
-from .mutations import CreateRecord, UpdateRecord, DeleteRecord
+from website.models import Record
 
 # Type GraphQL pour Record
 class RecordType(DjangoObjectType):
     class Meta:
         model = Record
+        fields = "__all__"
 
 # Queries pour obtenir les enregistrements
 class Query(graphene.ObjectType):
@@ -21,11 +21,3 @@ class Query(graphene.ObjectType):
             return Record.objects.get(id=id)
         except Record.DoesNotExist:
             return None
-
-# Schéma principal
-class Mutation(graphene.ObjectType):
-    create_record = CreateRecord.Field(description="Crée un nouvel enregistrement")
-    update_record = UpdateRecord.Field(description="Met à jour un enregistrement existant")
-    delete_record = DeleteRecord.Field(description="Supprime un enregistrement existant")
-
-schema = graphene.Schema(query=Query, mutation=Mutation)

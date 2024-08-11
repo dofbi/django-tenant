@@ -26,6 +26,7 @@ urlpatterns = [
     # path("", core_views.index),
     path("admin/", admin.site.urls),
     path("", include("website.urls")),
+    path("", include("graphql_api.urls")),
     path("__reload__/", include("django_browser_reload.urls")),
 ]
 if settings.DEBUG:

@@ -1,7 +1,11 @@
 import graphene
-from .models import Record
-from .types import RecordType
-from .forms import AddRecordForm
+from graphene_django.types import DjangoObjectType
+from website.models import Record
+
+class RecordType(DjangoObjectType):
+    class Meta:
+        model = Record
+        fields = "__all__"
 
 # Mutation pour créer un enregistrement
 class CreateRecord(graphene.Mutation):
@@ -78,3 +82,8 @@ class DeleteRecord(graphene.Mutation):
         record = Record.objects.get(pk=id)
         record.delete()
         return DeleteRecord(success=True)
+
+class Mutation(graphene.ObjectType):
+    create_record = CreateRecord.Field()
+    update_record = UpdateRecord.Field()
+    delete_record = DeleteRecord.Field()

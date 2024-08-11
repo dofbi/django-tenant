@@ -51,6 +51,7 @@ SHARED_APPS = [
 
 TENANT_APPS = (
     "website",
+    'graphql_api',
 )
 
 INSTALLED_APPS = list(SHARED_APPS) + [app for app in TENANT_APPS if app not in SHARED_APPS]
@@ -159,7 +160,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 CSRF_TRUSTED_ORIGINS = config('CSRF_TRUSTED_ORIGINS', default='').split(',')
 
 GRAPHENE = {
-    'SCHEMA': 'website.schema.schema',
+    'SCHEMA': 'graphql_api.schema.schema',
 }
 
 DATABASE_ROUTERS = (
